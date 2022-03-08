@@ -80,7 +80,9 @@ JAVA_HOME   d:\tools\java\jdk1.8.0_211
 - 进入 手机设置 -> 关于手机 ，不断点击 版本号 菜单（7次以上），
 - 退出到上级菜单，在开发者模式中，启动USB调试
 如果手机连接USB线后，手机界面弹出 类似 如下提示。
+
 ![image](https://user-images.githubusercontent.com/12490550/157188212-c7f2121b-3365-4a24-b919-3bd533a6d9b3.png)
+
 选择 允许USB调试。
 注意：
 有的手机系统，可能需要一些额外的选项需要设置好。
@@ -93,3 +95,93 @@ List of devices attached
 4d0035dc767a50bb        device product:t03gxx model:GT_N7100 device:t03g
 ```
 表示电脑上可以查看到 连接的设备，就可以运行自动化程序了。
+#### 一个例子
+下面是一段使用 Appium 自动化的打开 B站 应用，搜索 白月黑羽 发布的教程视频，并且打印视频标题的示例。
+```
+from appium import webdriver
+from selenium.webdriver.common.by import By
+from appium.webdriver.extensions.android.nativekey import AndroidKey
+
+desired_caps = {
+  'platformName': 'Android', # 被测手机是安卓
+  'platformVersion': '8', # 手机安卓版本
+  'deviceName': 'xxx', # 设备名，安卓手机可以随意填写
+  'appPackage': 'tv.danmaku.bili', # 启动APP Package名称
+  'appActivity': '.ui.splash.SplashActivity', # 启动Activity名称
+  'unicodeKeyboard': True, # 使用自带输入法，输入中文时填True
+  'resetKeyboard': True, # 执行完程序恢复原来输入法
+  'noReset': True,       # 不要重置App
+  'newCommandTimeout': 6000,
+  'automationName' : 'UiAutomator2'
+  # 'app': r'd:\apk\bili.apk',
+}
+
+# 连接Appium Server，初始化自动化环境
+driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+
+# 设置缺省等待时间
+driver.implicitly_wait(5)
+
+# 如果有`青少年保护`界面，点击`我知道了`
+iknow = driver.find_elements(By.ID, "text3")
+if iknow:
+    iknow.click()
+
+# 根据id定位搜索位置框，点击
+driver.find_element(By.ID, 'expand_search').click()
+
+# 根据id定位搜索输入框，点击
+sbox = driver.find_element(By.ID, 'search_src_text')
+sbox.send_keys('白月黑羽')
+# 输入回车键，确定搜索
+driver.press_keycode(AndroidKey.ENTER)
+
+# 选择（定位）所有视频标题
+eles = driver.find_element(By.ID, 'title')
+
+for ele in eles:
+    # 打印标题
+    print(ele.text)
+
+input('**** Press to quit..')
+driver.quit()
+```
+运行代码前，要先 运行 Appium Desktop
+#### Appium 2 的 find_element写法
+注意：Appium Python 现在已经升级到 2.x 大版本，依赖 Selenium 4 以后， 下面这种 find_element_by\* 方法都作为过期不赞成的写法
+> driver.find_element_by_id('username').send_keys('byhy')
+运行会有告警，都要写成下面这种格式
+```
+from selenium.webdriver.common.by import By
+wd.find_element(By.ID, 'username').send_keys('byhy')
+```
+而后续还有 Appium独有的查找方式，比如
+```
+driver.find_element_by_accessibility_id('byhy')
+driver.find_element_by_android_uiautomator(code)
+```
+要改成
+```
+from appium.webdriver.common.appiumby import AppiumBy
+
+driver.find_element(AppiumBy.ACCESSIBILITY_ID, 'byhy')
+driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, code)
+
+# 这样也可以根据ID
+wd.find_element(AppiumBy.ID, 'username').send_keys('byhy')
+```
+##### 没有apk
+如果你应用已经安装在手机上了，可以直接打开手机上该应用，进入到你要操作的界面
+然后执行
+> adb shell dumpsys activity recents | find "intent={"
+会显示如下，最近的 几个 activity 信息，
+```
+intent={act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=tv.danmaku.bili/.ui.splash.SplashActivity}
+intent={act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10000300cmp=com.huawei.android.launcher/.unihome.UniHomeLauncher}
+intent={flg=0x10804000 cmp=com.android.systemui/.recents.RecentsActivity bnds=[48,1378][10322746]}
+intent={flg=0x10000000 cmp=com.tencent.mm/.ui.LauncherUI}
+```
+其中第一行就是当前的应用，我们特别关注最后
+> cmp=tv.danmaku.bili/.ui.splash.SplashActivity
+应用的package名称就是 tv.danmaku.bili
+应用的启动Activity就是 .ui.splash.SplashActivity
