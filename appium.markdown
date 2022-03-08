@@ -19,7 +19,9 @@ Appium 自动化方案的特点：
 - 支持多种编程语言:像 Selenium 一样， 可以用多种编程语言 调用它 开发自动化程序。
 ### 自动化原理
 我们先来看一下Appium自动化的原理图
+
 ![image](https://user-images.githubusercontent.com/12490550/157184605-ae896722-6ff4-4ba5-9f00-96bd24768ebf.png)
+
 这图是不是很眼熟？
 对啦，和Selenium 原理图很像。因为 Appium自动化架构就是借鉴的Selenium。
 大家看看这幅图， 包含了 3个主体部分 ： 自动化程序、Appium Server、移动设备
@@ -78,7 +80,7 @@ JAVA_HOME   d:\tools\java\jdk1.8.0_211
 - 进入 手机设置 -> 关于手机 ，不断点击 版本号 菜单（7次以上），
 - 退出到上级菜单，在开发者模式中，启动USB调试
 如果手机连接USB线后，手机界面弹出 类似 如下提示。
-
+![image](https://user-images.githubusercontent.com/12490550/157188212-c7f2121b-3365-4a24-b919-3bd533a6d9b3.png)
 选择 允许USB调试。
 注意：
 有的手机系统，可能需要一些额外的选项需要设置好。
