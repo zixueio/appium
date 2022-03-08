@@ -18,4 +18,4 @@ Appium 自动化方案的特点：
 - 支持多种编程语言:像 Selenium 一样， 可以用多种编程语言 调用它 开发自动化程序。
 ## 自动化原理
 我们先来看一下Appium自动化的原理图
-
+![image](https://user-images.githubusercontent.com/12490550/157184605-ae896722-6ff4-4ba5-9f00-96bd24768ebf.png)
