@@ -185,3 +185,12 @@ intent={flg=0x10000000 cmp=com.tencent.mm/.ui.LauncherUI}
 > cmp=tv.danmaku.bili/.ui.splash.SplashActivity
 应用的package名称就是 tv.danmaku.bili
 应用的启动Activity就是 .ui.splash.SplashActivity
+##### 有apk
+如果你已经获取到了 apk，在命令行窗口执行
+> d:\tools\androidsdk\build-tools\29.0.3\aapt.exe dump badging d:\tools\apk\bili.apk | find "package: name="
+输出信息中，就有应用的package名称
+> package: name='tv.danmaku.bili' versionCode='5531000' versionName='5.53.1' platformBuildVersionName='5.53.1' compileSdkVersion='28' compileSdkVersionCodename='9'
+在命令行窗口执行
+> d:\tools\androidsdk\build-tools\29.0.3\aapt.exe dump badging d:\tools\apk\bili.apk | find "launchable-activity"
+输出信息中，就有应用的启动Activity
+> launchable-activity: name='tv.danmaku.bili.ui.splash.SplashActivity'  label='' icon=''
